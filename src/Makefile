@@ -30,7 +30,7 @@ MANPAGES = gf2-morse.1
 MANPAGESGZ = $(MANPAGES:=.gz)
 MKDIR = mkdir -p
 MV = mv -f
-OBJECTS = cp2130.o gf2device.o libusb-extra.o
+OBJECTS = cp2130.o error.o gf2device.o libusb-extra.o
 RMDIR = rmdir --ignore-fail-on-non-empty
 TARGETS = gf2-morse
 
