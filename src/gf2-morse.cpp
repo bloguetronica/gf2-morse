@@ -1,4 +1,4 @@
-/* GF2 Morse Command - Version 1.1 for Debian Linux
+/* GF2 Morse Command - Version 2.0 for Debian Linux
    Copyright (c) 2020-2024 Samuel Lourenço
 
    This program is free software: you can redistribute it and/or modify it
@@ -56,23 +56,24 @@ int main(int argc, char **argv)
         if (err == GF2Device::SUCCESS) {  // Device was successfully opened
             int errcnt = 0;
             std::string errstr;
-            if (device.isWaveGenEnabled(errcnt, errstr) && errcnt == 0) {  // Check if GPIO.2/RESET is high (errlvl can change to 1 as a consequence of that verification, hence the need for "&& errlvl ==  EXIT_SUCCESS" in order to avoid misleading messages)
+            if (!device.isWaveGenEnabled(errcnt, errstr) && errcnt == 0) {  // Check if the waveform generator is enabled (errcnt can increment as a consequence of that verification, hence the need for " && errcnt == 0" in order to avoid misleading messages)
                 std::cerr << "Error: Waveform generator is stopped and should be running.\nPlease invoke gf2-start and try again.\n";
-            } else if (!device.isDACEnabled(errcnt, errstr) && errcnt == 0) {  // Check if GPIO.3/SLEEP is low (again, the same precaution is needed)
+            } else if (device.isDACEnabled(errcnt, errstr) && errcnt == 0) {  // Check if the DAC internal to the waveform generator is enabled (again, the same precaution is needed)
                 std::cerr << "Error: Waveform generator DAC is enabled and should be disabled.\nPlease invoke gf2-dacoff and try again.\n";
             } else if (errcnt == 0) {  // If all goes well so far
                 std::cout << "Signaling message...\n";
                 signalMessage(device, argv[1], errcnt, errstr);
-                if (errcnt > 0) {  // In case of error
-                    if (device.disconnected()) {  // If the device disconnected
-                        std::cerr << "Error: Device disconnected.\n";
-                    } else {
-                        printErrors(errstr);
-                    }
-                    errlvl = EXIT_FAILURE;
-                } else {  // Operation successful
-                    std::cout << "\nMessage signaled.\n";
+                if (errcnt == 0) {  // Operation successful
+                    std::cout << "Message signaled.\n";
                 }
+            }
+            if (errcnt > 0) {  // In case of error
+                if (device.disconnected()) {  // If the device disconnected
+                    std::cerr << "Error: Device disconnected.\n";
+                } else {
+                    printErrors(errstr);
+                }
+                errlvl = EXIT_FAILURE;
             }
             device.close();
         } else {  // Failed to open device
@@ -115,305 +116,250 @@ void signalMessage(GF2Device device, char *message, int &errcnt, std::string &er
             case ' ':
                 if (i > 0 && message[i - 1] != '\n' && message[i - 1] != ' ')  // Extra spaces omitted!
                 {
-                    std::cout << " ";
-                    fflush(stdout);  // Force character output
+                    std::cout << " " << std::flush;
                     usleep(4 * TUNIT);  // Word space
                 }
                 break;
             case '!':
-                std::cout << "!";
-                fflush(stdout);  // Force character output
+                std::cout << "!" << std::flush;
                 signalCharCode(device, "-.-.--", errcnt, errstr);
                 break;
             case '"':
-                std::cout << "\"";
-                fflush(stdout);  // Force character output
+                std::cout << "\"" << std::flush;
                 signalCharCode(device, ".-..-.", errcnt, errstr);
                 break;
             case '$':
-                std::cout << "$";
-                fflush(stdout);  // Force character output
+                std::cout << "$" << std::flush;
                 signalCharCode(device, "...-..-", errcnt, errstr);
                 break;
             case '&':
-                std::cout << "&";
-                fflush(stdout);  // Force character output
+                std::cout << "&" << std::flush;
                 signalCharCode(device, ".-...", errcnt, errstr);
                 break;
             case '\'':
-                std::cout << "'";
-                fflush(stdout);  // Force character output
+                std::cout << "'" << std::flush;
                 signalCharCode(device, ".----.", errcnt, errstr);
                 break;
             case '(':
-                std::cout << "(";
-                fflush(stdout);  // Force character output
+                std::cout << "(" << std::flush;
                 signalCharCode(device, "-.--.", errcnt, errstr);
                 break;
             case ')':
-                std::cout << ")";
-                fflush(stdout);  // Force character output
+                std::cout << ")" << std::flush;
                 signalCharCode(device, "-.--.-", errcnt, errstr);
                 break;
             case '+':
-                std::cout << "+";
-                fflush(stdout);  // Force character output
+                std::cout << "+" << std::flush;
                 signalCharCode(device, ".-.-.", errcnt, errstr);
                 break;
             case ',':
-                std::cout << ",";
-                fflush(stdout);  // Force character output
+                std::cout << "," << std::flush;
                 signalCharCode(device, "--..--", errcnt, errstr);
                 break;
             case '-':
-                std::cout << "-";
-                fflush(stdout);  // Force character output
+                std::cout << "-" << std::flush;
                 signalCharCode(device, "-....-", errcnt, errstr);
                 break;
             case '.':
-                std::cout << ".";
-                fflush(stdout);  // Force character output
+                std::cout << "." << std::flush;
                 signalCharCode(device, ".-.-.-", errcnt, errstr);
                 break;
             case '/':
-                std::cout << "/";
-                fflush(stdout);  // Force character output
+                std::cout << "/" << std::flush;
                 signalCharCode(device, "-..-.", errcnt, errstr);
                 break;
             case '0':
-                std::cout << "0";
-                fflush(stdout);  // Force character output
+                std::cout << "0" << std::flush;
                 signalCharCode(device, "-----", errcnt, errstr);
                 break;
             case '1':
-                std::cout << "1";
-                fflush(stdout);  // Force character output
+                std::cout << "1" << std::flush;
                 signalCharCode(device, ".----", errcnt, errstr);
                 break;
             case '2':
-                std::cout << "2";
-                fflush(stdout);  // Force character output
+                std::cout << "2" << std::flush;
                 signalCharCode(device, "..---", errcnt, errstr);
                 break;
             case '3':
-                std::cout << "3";
-                fflush(stdout);  // Force character output
+                std::cout << "3" << std::flush;
                 signalCharCode(device, "...--", errcnt, errstr);
                 break;
             case '4':
-                std::cout << "4";
-                fflush(stdout);  // Force character output
+                std::cout << "4" << std::flush;
                 signalCharCode(device, "....-", errcnt, errstr);
                 break;
             case '5':
-                std::cout << "5";
-                fflush(stdout);  // Force character output
+                std::cout << "5" << std::flush;
                 signalCharCode(device, ".....", errcnt, errstr);
                 break;
             case '6':
-                std::cout << "6";
-                fflush(stdout);  // Force character output
+                std::cout << "6" << std::flush;
                 signalCharCode(device, "-....", errcnt, errstr);
                 break;
             case '7':
-                std::cout << "7";
-                fflush(stdout);  // Force character output
+                std::cout << "7" << std::flush;
                 signalCharCode(device, "--...", errcnt, errstr);
                 break;
             case '8':
-                std::cout << "8";
-                fflush(stdout);  // Force character output
+                std::cout << "8" << std::flush;
                 signalCharCode(device, "---..", errcnt, errstr);
                 break;
             case '9':
-                std::cout << "9";
-                fflush(stdout);  // Force character output
+                std::cout << "9" << std::flush;
                 signalCharCode(device, "----.", errcnt, errstr);
                 break;
             case ':':
-                std::cout << ":";
-                fflush(stdout);  // Force character output
+                std::cout << ":" << std::flush;
                 signalCharCode(device, "---...", errcnt, errstr);
                 break;
             case ';':
-                std::cout << ";";
-                fflush(stdout);  // Force character output
+                std::cout << ";" << std::flush;
                 signalCharCode(device, "-.-.-.", errcnt, errstr);
                 break;
             case '=':
-                std::cout << "=";
-                fflush(stdout);  // Force character output
+                std::cout << "=" << std::flush;
                 signalCharCode(device, "-...-", errcnt, errstr);
                 break;
             case '?':
-                std::cout << "?";
-                fflush(stdout);  // Force character output
+                std::cout << "?" << std::flush;
                 signalCharCode(device, "..--..", errcnt, errstr);
                 break;
             case '@':
-                std::cout << "@";
-                fflush(stdout);  // Force character output
+                std::cout << "@" << std::flush;
                 signalCharCode(device, ".--.-.", errcnt, errstr);
                 break;
             case 'A':
             case 'a':
-                std::cout << "A";
-                fflush(stdout);  // Force character output
+                std::cout << "A" << std::flush;
                 signalCharCode(device, ".-", errcnt, errstr);
                 break;
             case 'B':
             case 'b':
-                std::cout << "B";
-                fflush(stdout);  // Force character output
+                std::cout << "B" << std::flush;
                 signalCharCode(device, "-...", errcnt, errstr);
                 break;
             case 'C':
             case 'c':
-                std::cout << "C";
-                fflush(stdout);  // Force character output
+                std::cout << "C" << std::flush;
                 signalCharCode(device, "-.-.", errcnt, errstr);
                 break;
             case 'D':
             case 'd':
-                std::cout << "D";
-                fflush(stdout);  // Force character output
+                std::cout << "D" << std::flush;
                 signalCharCode(device, "-..", errcnt, errstr);
                 break;
             case 'E':
             case 'e':
-                std::cout << "E";
-                fflush(stdout);  // Force character output
+                std::cout << "E" << std::flush;
                 signalCharCode(device, ".", errcnt, errstr);
                 break;
             case 'F':
             case 'f':
-                std::cout << "F";
-                fflush(stdout);  // Force character output
+                std::cout << "F" << std::flush;
                 signalCharCode(device, "..-.", errcnt, errstr);
                 break;
             case 'G':
             case 'g':
-                std::cout << "G";
-                fflush(stdout);  // Force character output
+                std::cout << "G" << std::flush;
                 signalCharCode(device, "--.", errcnt, errstr);
                 break;
             case 'H':
             case 'h':
-                std::cout << "H";
-                fflush(stdout);  // Force character output
+                std::cout << "H" << std::flush;
                 signalCharCode(device, "....", errcnt, errstr);
                 break;
             case 'I':
             case 'i':
-                std::cout << "I";
-                fflush(stdout);  // Force character output
+                std::cout << "I" << std::flush;
                 signalCharCode(device, "..", errcnt, errstr);
                 break;
             case 'J':
             case 'j':
-                std::cout << "J";
-                fflush(stdout);  // Force character output
+                std::cout << "J" << std::flush;
                 signalCharCode(device, ".---", errcnt, errstr);
                 break;
             case 'K':
             case 'k':
-                std::cout << "K";
-                fflush(stdout);  // Force character output
+                std::cout << "K" << std::flush;
                 signalCharCode(device, "-.-", errcnt, errstr);
                 break;
             case 'L':
             case 'l':
-                std::cout << "L";
-                fflush(stdout);  // Force character output
+                std::cout << "L" << std::flush;
                 signalCharCode(device, ".-..", errcnt, errstr);
                 break;
             case 'M':
             case 'm':
-                std::cout << "M";
-                fflush(stdout);  // Force character output
+                std::cout << "M" << std::flush;
                 signalCharCode(device, "--", errcnt, errstr);
                 break;
             case 'N':
             case 'n':
-                std::cout << "N";
-                fflush(stdout);  // Force character output
+                std::cout << "N" << std::flush;
                 signalCharCode(device, "-.", errcnt, errstr);
                 break;
             case 'O':
             case 'o':
-                std::cout << "O";
-                fflush(stdout);  // Force character output
+                std::cout << "O" << std::flush;
                 signalCharCode(device, "---", errcnt, errstr);
                 break;
             case 'P':
             case 'p':
-                std::cout << "P";
-                fflush(stdout);  // Force character output
+                std::cout << "P" << std::flush;
                 signalCharCode(device, ".--.", errcnt, errstr);
                 break;
             case 'Q':
             case 'q':
-                std::cout << "Q";
-                fflush(stdout);  // Force character output
+                std::cout << "Q" << std::flush;
                 signalCharCode(device, "--.-", errcnt, errstr);
                 break;
             case 'R':
             case 'r':
-                std::cout << "R";
-                fflush(stdout);  // Force character output
+                std::cout << "R" << std::flush;
                 signalCharCode(device, ".-.", errcnt, errstr);
                 break;
             case 'S':
             case 's':
-                std::cout << "S";
-                fflush(stdout);  // Force character output
+                std::cout << "S" << std::flush;
                 signalCharCode(device, "...", errcnt, errstr);
                 break;
             case 'T':
             case 't':
-                std::cout << "T";
-                fflush(stdout);  // Force character output
+                std::cout << "T" << std::flush;
                 signalCharCode(device, "-", errcnt, errstr);
                 break;
             case 'U':
             case 'u':
-                std::cout << "U";
-                fflush(stdout);  // Force character output
+                std::cout << "U" << std::flush;
                 signalCharCode(device, "..-", errcnt, errstr);
                 break;
             case 'V':
             case 'v':
-                std::cout << "V";
-                fflush(stdout);  // Force character output
+                std::cout << "V" << std::flush;
                 signalCharCode(device, "...-", errcnt, errstr);
                 break;
             case 'W':
             case 'w':
-                std::cout << "W";
-                fflush(stdout);  // Force character output
+                std::cout << "W" << std::flush;
                 signalCharCode(device, ".--", errcnt, errstr);
                 break;
             case 'X':
             case 'x':
-                std::cout << "X";
-                fflush(stdout);  // Force character output
+                std::cout << "X" << std::flush;
                 signalCharCode(device, "-..-", errcnt, errstr);
                 break;
             case 'Y':
             case 'y':
-                std::cout << "Y";
-                fflush(stdout);  // Force character output
+                std::cout << "Y" << std::flush;
                 signalCharCode(device, "-.--", errcnt, errstr);
                 break;
             case 'Z':
             case 'z':
-                std::cout << "Z";
-                fflush(stdout);  // Force character output
+                std::cout << "Z" << std::flush;
                 signalCharCode(device, "--..", errcnt, errstr);
                 break;
             case '_':
-                std::cout << "_";
-                fflush(stdout);  // Force character output
+                std::cout << "_" << std::flush;
                 signalCharCode(device, "..--.-", errcnt, errstr);
                 break;
         }
@@ -421,4 +367,5 @@ void signalMessage(GF2Device device, char *message, int &errcnt, std::string &er
             break;  // Break the cycle
         }
     }
+    std::cout << "\n";
 }
