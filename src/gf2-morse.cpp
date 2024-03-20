@@ -37,8 +37,8 @@ int EXIT_USERERR = 2;  // Exit status value to indicate a command usage error
 int TUNIT = 50000;  // Time unit in us
 
 // Function prototypes
-void signalCharCode(GF2Device device, char *code, int &errcnt, std::string &errstr);
-void signalMessage(GF2Device device, char *message, int &errcnt, std::string &errstr);
+void signalCharCode(GF2Device &device, char *code, int &errcnt, std::string &errstr);
+void signalMessage(GF2Device &device, char *message, int &errcnt, std::string &errstr);
 
 int main(int argc, char **argv)
 {
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
             std::string errstr;
             if (!device.isWaveGenEnabled(errcnt, errstr) && errcnt == 0) {  // Check if the waveform generator is enabled (errcnt can increment as a consequence of that verification, hence the need for " && errcnt == 0" in order to avoid misleading messages)
                 std::cerr << "Error: Waveform generator is stopped and should be running.\nPlease invoke gf2-start and try again.\n";
-            } else if (device.isDACEnabled(errcnt, errstr) && errcnt == 0) {  // Check if the DAC internal to the waveform generator is enabled (again, the same precaution is needed)
+            } else if (device.isDACEnabled(errcnt, errstr) && errcnt == 0) {  // Check if the DAC internal to the AD9834 waveform generator is enabled (again, the same precaution is needed)
                 std::cerr << "Error: Waveform generator DAC is enabled and should be disabled.\nPlease invoke gf2-dacoff and try again.\n";
             } else if (errcnt == 0) {  // If all goes well so far
                 std::cout << "Signaling message...\n";
@@ -90,24 +90,24 @@ int main(int argc, char **argv)
     return errlvl;
 }
 
-void signalCharCode(GF2Device device, char *code, int &errcnt, std::string &errstr)  // Signals character code (adding a trailing inter-character space)
+void signalCharCode(GF2Device &device, char *code, int &errcnt, std::string &errstr)  // Signals character code (adding a trailing inter-character space)
 {
     size_t len = strlen(code);
     for (size_t i = 0; i < len; ++i) {
         if (code[i] == '.' || code [i] == '-') {  // This condition is only required for sanity purposes
-            device.setDACEnabled(false, errcnt, errstr);  // Set GPIO.3 to a logical low in order to enable the AD9834 internal DAC
+            device.setDACEnabled(true, errcnt, errstr);  // Enable the AD9834 internal DAC
             usleep(TUNIT);  // Corresponds to a "dot"
             if (code[i] == '-') {
                 usleep(2 * TUNIT);  // Adds to the previous time interval so it corresponds to a "dash"
             }
-            device.setDACEnabled(true, errcnt, errstr);  // Set GPIO.3 to a logical high in order to disable the AD9834 internal DAC
+            device.setDACEnabled(false, errcnt, errstr);  // Disable the AD9834 internal DAC
             usleep(TUNIT);  // Corresponds to an intra-character space
         }
     }
     usleep(2 * TUNIT);  // Inter-character space
 }
 
-void signalMessage(GF2Device device, char *message, int &errcnt, std::string &errstr)  // Signals message
+void signalMessage(GF2Device &device, char *message, int &errcnt, std::string &errstr)  // Signals message
 {
     size_t len = strlen(message);
     for (size_t i = 0; i < len; ++i) {
