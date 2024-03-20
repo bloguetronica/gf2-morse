@@ -22,12 +22,10 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <stdbool.h>  // Revise
 #include <string.h>  // Revise
-#include <unistd.h>  // Revise
-#include <libusb-1.0/libusb.h>  // Revise
 
 #include <string>
+#include <unistd.h>
 #include "error.h"
 #include "gf2device.h"
 
