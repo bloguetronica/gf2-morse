@@ -21,9 +21,6 @@
 // Includes
 #include <cstdlib>
 #include <iostream>
-
-#include <string.h>  // Revise
-
 #include <string>
 #include <unistd.h>
 #include "error.h"
@@ -32,11 +29,11 @@
 
 // Global variables
 int EXIT_USERERR = 2;  // Exit status value to indicate a command usage error
-int TUNIT = 50000;  // Time unit in us
+int TUNIT = 50000;     // Time unit in us
 
 // Function prototypes
-void signalCharCode(GF2Device &device, char *code, int &errcnt, std::string &errstr);
-void signalMessage(GF2Device &device, char *message, int &errcnt, std::string &errstr);
+void signalCharCode(GF2Device &device, const std::string &code, int &errcnt, std::string &errstr);
+void signalMessage(GF2Device &device, const std::string &message, int &errcnt, std::string &errstr);
 
 int main(int argc, char **argv)
 {
@@ -88,9 +85,9 @@ int main(int argc, char **argv)
     return errlvl;
 }
 
-void signalCharCode(GF2Device &device, char *code, int &errcnt, std::string &errstr)  // Signals character code (adding a trailing inter-character space)
+void signalCharCode(GF2Device &device, const std::string &code, int &errcnt, std::string &errstr)  // Signals character code (adding a trailing inter-character space)
 {
-    size_t len = strlen(code);
+    size_t len = code.size();
     for (size_t i = 0; i < len; ++i) {
         if (code[i] == '.' || code [i] == '-') {  // This condition is only required for sanity purposes
             device.setDACEnabled(true, errcnt, errstr);  // Enable the AD9834 internal DAC
@@ -105,9 +102,9 @@ void signalCharCode(GF2Device &device, char *code, int &errcnt, std::string &err
     usleep(2 * TUNIT);  // Inter-character space
 }
 
-void signalMessage(GF2Device &device, char *message, int &errcnt, std::string &errstr)  // Signals message
+void signalMessage(GF2Device &device, const std::string &message, int &errcnt, std::string &errstr)  // Signals message
 {
-    size_t len = strlen(message);
+    size_t len = message.size();
     for (size_t i = 0; i < len; ++i) {
         switch (message[i]) {  // Note that, at this point, only the characters listed below will be signaled!
             case '\n':
