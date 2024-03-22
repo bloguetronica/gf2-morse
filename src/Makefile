@@ -1,5 +1,5 @@
 # Makefile for GF2 Morse Command, Debian Linux (GCC)
-# Copyright (c) 2020 Samuel Lourenço
+# Copyright (c) 2020-2024 Samuel Lourenço
 
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -18,11 +18,20 @@
 # Please feel free to contact me via e-mail: samuel.fmlourenco@gmail.com
 
 
+prefix = /usr/local
+
 CC = gcc
-CFLAGS = -O2 -std=gnu99 -Wall -pedantic
+CFLAGS = -O2 -std=c11 -Wall -pedantic
+CXX = g++
+CXXFLAGS = -O2 -std=c++11 -Wall -pedantic
 LDFLAGS = -s
-LDLIBS = -lm -lusb-1.0
-OBJECTS = gf2-core.o libusb-extra.o
+LDLIBS = -lusb-1.0
+MANPAGES = gf2-morse.1
+MANPAGESGZ = $(MANPAGES:=.gz)
+MKDIR = mkdir -p
+MV = mv -f
+OBJECTS = cp2130.o error.o gf2device.o libusb-extra.o
+RMDIR = rmdir --ignore-fail-on-non-empty
 TARGETS = gf2-morse
 
 .PHONY: all clean install uninstall
@@ -30,16 +39,29 @@ TARGETS = gf2-morse
 all: $(TARGETS)
 
 $(TARGETS): % : %.o $(OBJECTS)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $<
+
 clean:
 	$(RM) *.o $(TARGETS)
 
-install:
-	mv -f $(TARGETS) /usr/local/bin/.
+install: all install-bin install-man
 
-uninstall:
-	cd /usr/local/bin && $(RM) $(TARGETS)
+install-bin:
+	$(MKDIR) $(DESTDIR)$(prefix)/bin && $(MV) $(TARGETS) $(DESTDIR)$(prefix)/bin/.
+
+install-man:
+	cd man && gzip -fknv9 $(MANPAGES) && $(MKDIR) $(DESTDIR)$(prefix)/share/man/man1 && $(MV) $(MANPAGESGZ) $(DESTDIR)$(prefix)/share/man/man1/.
+
+uninstall: uninstall-man uninstall-bin clean
+
+uninstall-bin:
+	cd $(DESTDIR)$(prefix)/bin && $(RM) $(TARGETS)
+
+uninstall-man:
+	if [ -d $(DESTDIR)$(prefix)/share/man/man1 ]; then cd $(DESTDIR)$(prefix)/share/man/man1 && $(RM) $(MANPAGESGZ) && $(RMDIR) $(DESTDIR)$(prefix)/share/man/man1; fi

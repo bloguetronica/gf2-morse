@@ -1,5 +1,5 @@
-/* Extra functions for libusb - Version 1.0.3
-   Copyright (c) 2018-2021 Samuel Lourenço
+/* Error handling functions - Version 1.0.0
+   Copyright (c) 2022 Samuel Lourenço
 
    This library is free software: you can redistribute it and/or modify it
    under the terms of the GNU Lesser General Public License as published by
@@ -18,13 +18,16 @@
    Please feel free to contact me via e-mail: samuel.fmlourenco@gmail.com */
 
 
-#ifndef LIBUSB_EXTRA_H_
-#define LIBUSB_EXTRA_H_
-
 // Includes
-#include <libusb-1.0/libusb.h>
+#include <iostream>
+#include "error.h"
 
-// Function prototypes
-libusb_device_handle *libusb_open_device_with_vid_pid_serial(libusb_context *context, uint16_t vid, uint16_t pid, unsigned char *serial);
-
-#endif
+// Prints errors in separated lines (each error should be terminated with a newline character)
+void printErrors(const std::string &errstr)
+{
+    size_t lnend, lnstart = 0;
+    while ((lnend = errstr.find('\n', lnstart)) != std::string::npos) {
+        std::cerr << "Error: " << errstr.substr(lnstart, lnend - lnstart + 1);  // This includes the newline character
+        lnstart = lnend + 1;
+    }
+}

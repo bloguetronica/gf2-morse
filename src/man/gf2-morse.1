@@ -1,0 +1,48 @@
+.TH GF2-MORSE 1
+.SH NAME
+gf2-morse \- signal message via GF2 Function Generator using Morse code
+.SH SYNOPSIS
+.B gf2-morse
+.I MESSAGE
+.RI [ SERIALNUMBER ]
+.SH DESCRIPTION
+.B gf2-morse
+utilizes the function generator to signal the message given in the argument.
+By using this additional command, it is possible to signal a message in
+audio-frequency, or even in radio-frequency CW mode. However, mind that the
+frequency is limited by the capability of the function generator itself. With
+a properly matched antenna, it is possible to perform tests in the 80m, 60m
+and 40m bands, or even in the 30m, 20m, 17m and 15m bands with degraded
+performance.
+
+Note that the frequency and amplitude should be previously set to its chosen
+values. In any case, the function generator must be running and with its DAC
+disabled. You can invoke
+.B gf2-start
+and/or
+.B gf2-dacoff
+if needed. If all conditions are met, the message will be signaled character
+by character, and the characters being signaled will be progressively
+displayed. Any non-standard characters will be ignored.
+
+Specifying a serial number is optional.
+.SH EXAMPLES
+.TP
+.B gf2-morse 'Hello, World!'
+Signal the "HELLO, WORLD!" message in Morse code at the set frequency and
+amplitude.
+.TP
+.B gf2-morse Hello,\e World!
+Equivalent to the previous command line.
+.SH "EXIT STATUS"
+Exits with a status of zero in case of success. Returns one should an error
+occur, or two in case of bad input.
+.SH AUTHOR
+Samuel Lourenço (samuel.fmlourenco@gmail.com).
+.SH "SEE ALSO"
+gf2-amp(1), gf2-amp50(1), gf2-clear(1), gf2-clkoff(1), gf2-clkon(1),
+gf2-dacoff(1), gf2-dacon(1), gf2-freq(1), gf2-freq0(1), gf2-freq1(1),
+gf2-info(1), gf2-list(1), gf2-lockotp(1), gf2-phase(1), gf2-phase0(1),
+gf2-phase1(1), gf2-reset(1), gf2-selfreq0(1), gf2-selfreq1(1),
+gf2-selphase0(1), gf2-selphase1(1), gf2-sine(1), gf2-start(1), gf2-status(1),
+gf2-stop(1), gf2-tri(1)
