@@ -87,8 +87,8 @@ int main(int argc, char **argv)
 
 void signalCharCode(GF2Device &device, const std::string &code, int &errcnt, std::string &errstr)  // Signals character code (adding a trailing inter-character space)
 {
-    size_t len = code.size();
-    for (size_t i = 0; i < len; ++i) {
+    size_t strLength = code.size();
+    for (size_t i = 0; i < strLength; ++i) {
         if (code[i] == '.' || code [i] == '-') {  // This condition is only required for sanity purposes
             device.setDACEnabled(true, errcnt, errstr);  // Enable the AD9834 internal DAC
             usleep(TUNIT);  // Corresponds to a "dot"
@@ -104,8 +104,8 @@ void signalCharCode(GF2Device &device, const std::string &code, int &errcnt, std
 
 void signalMessage(GF2Device &device, const std::string &message, int &errcnt, std::string &errstr)  // Signals message
 {
-    size_t len = message.size();
-    for (size_t i = 0; i < len; ++i) {
+    size_t strLength = message.size();
+    for (size_t i = 0; i < strLength; ++i) {
         switch (message[i]) {  // Note that, at this point, only the characters listed below will be signaled!
             case '\n':
             case ' ':
