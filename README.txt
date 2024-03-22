@@ -14,10 +14,10 @@ run "install.sh" by typing "sudo ./install.sh" on a terminal window, after
 changing your working directory to the current one. This script will first
 obtain and install the required "build-essential" and "libusb-1.0-0-dev"
 packages (if they are not installed yet). Then it will compile the binary and
-move it to "/usr/local/bin/". It will also copy the corresponding man page to
-"/usr/local/share/man/man1/". Note that the installation script won't create
-the necessary access rules, in the assumption that the main commands are, or
-will be installed.
+move it to "/usr/local/bin/". Note that the build process will also compress
+the respective man page and copy it to "/usr/local/share/man/man1/". Note that
+the installation script won't create the necessary access rules, in the
+assumption that the main commands are, or will be installed.
 
 To uninstall, you should run "uninstall.sh" by typing "sudo ./uninstall.sh",
 again on a terminal window after making sure that your working directory is
