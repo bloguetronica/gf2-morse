@@ -21,11 +21,11 @@
 // Includes
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <string>
 #include <unistd.h>
 #include "error.h"
 #include "gf2device.h"
-
 
 // Global variables
 int EXIT_USERERR = 2;  // Exit status value to indicate a command usage error
@@ -106,257 +106,74 @@ void signalMessage(GF2Device &device, const std::string &message, int &errcnt, s
 {
     size_t strLength = message.size();
     for (size_t i = 0; i < strLength; ++i) {
-        switch (message[i]) {  // Note that, at this point, only the characters listed below will be signaled!
-            case '\n':
-            case ' ':
-                if (i > 0 && message[i - 1] != '\n' && message[i - 1] != ' ')  // Extra spaces omitted!
-                {
-                    std::cout << " " << std::flush;
-                    usleep(4 * TUNIT);  // Word space
-                }
-                break;
-            case '!':
-                std::cout << "!" << std::flush;
-                signalCharCode(device, "-.-.--", errcnt, errstr);
-                break;
-            case '"':
-                std::cout << "\"" << std::flush;
-                signalCharCode(device, ".-..-.", errcnt, errstr);
-                break;
-            case '$':
-                std::cout << "$" << std::flush;
-                signalCharCode(device, "...-..-", errcnt, errstr);
-                break;
-            case '&':
-                std::cout << "&" << std::flush;
-                signalCharCode(device, ".-...", errcnt, errstr);
-                break;
-            case '\'':
-                std::cout << "'" << std::flush;
-                signalCharCode(device, ".----.", errcnt, errstr);
-                break;
-            case '(':
-                std::cout << "(" << std::flush;
-                signalCharCode(device, "-.--.", errcnt, errstr);
-                break;
-            case ')':
-                std::cout << ")" << std::flush;
-                signalCharCode(device, "-.--.-", errcnt, errstr);
-                break;
-            case '+':
-                std::cout << "+" << std::flush;
-                signalCharCode(device, ".-.-.", errcnt, errstr);
-                break;
-            case ',':
-                std::cout << "," << std::flush;
-                signalCharCode(device, "--..--", errcnt, errstr);
-                break;
-            case '-':
-                std::cout << "-" << std::flush;
-                signalCharCode(device, "-....-", errcnt, errstr);
-                break;
-            case '.':
-                std::cout << "." << std::flush;
-                signalCharCode(device, ".-.-.-", errcnt, errstr);
-                break;
-            case '/':
-                std::cout << "/" << std::flush;
-                signalCharCode(device, "-..-.", errcnt, errstr);
-                break;
-            case '0':
-                std::cout << "0" << std::flush;
-                signalCharCode(device, "-----", errcnt, errstr);
-                break;
-            case '1':
-                std::cout << "1" << std::flush;
-                signalCharCode(device, ".----", errcnt, errstr);
-                break;
-            case '2':
-                std::cout << "2" << std::flush;
-                signalCharCode(device, "..---", errcnt, errstr);
-                break;
-            case '3':
-                std::cout << "3" << std::flush;
-                signalCharCode(device, "...--", errcnt, errstr);
-                break;
-            case '4':
-                std::cout << "4" << std::flush;
-                signalCharCode(device, "....-", errcnt, errstr);
-                break;
-            case '5':
-                std::cout << "5" << std::flush;
-                signalCharCode(device, ".....", errcnt, errstr);
-                break;
-            case '6':
-                std::cout << "6" << std::flush;
-                signalCharCode(device, "-....", errcnt, errstr);
-                break;
-            case '7':
-                std::cout << "7" << std::flush;
-                signalCharCode(device, "--...", errcnt, errstr);
-                break;
-            case '8':
-                std::cout << "8" << std::flush;
-                signalCharCode(device, "---..", errcnt, errstr);
-                break;
-            case '9':
-                std::cout << "9" << std::flush;
-                signalCharCode(device, "----.", errcnt, errstr);
-                break;
-            case ':':
-                std::cout << ":" << std::flush;
-                signalCharCode(device, "---...", errcnt, errstr);
-                break;
-            case ';':
-                std::cout << ";" << std::flush;
-                signalCharCode(device, "-.-.-.", errcnt, errstr);
-                break;
-            case '=':
-                std::cout << "=" << std::flush;
-                signalCharCode(device, "-...-", errcnt, errstr);
-                break;
-            case '?':
-                std::cout << "?" << std::flush;
-                signalCharCode(device, "..--..", errcnt, errstr);
-                break;
-            case '@':
-                std::cout << "@" << std::flush;
-                signalCharCode(device, ".--.-.", errcnt, errstr);
-                break;
-            case 'A':
-            case 'a':
-                std::cout << "A" << std::flush;
-                signalCharCode(device, ".-", errcnt, errstr);
-                break;
-            case 'B':
-            case 'b':
-                std::cout << "B" << std::flush;
-                signalCharCode(device, "-...", errcnt, errstr);
-                break;
-            case 'C':
-            case 'c':
-                std::cout << "C" << std::flush;
-                signalCharCode(device, "-.-.", errcnt, errstr);
-                break;
-            case 'D':
-            case 'd':
-                std::cout << "D" << std::flush;
-                signalCharCode(device, "-..", errcnt, errstr);
-                break;
-            case 'E':
-            case 'e':
-                std::cout << "E" << std::flush;
-                signalCharCode(device, ".", errcnt, errstr);
-                break;
-            case 'F':
-            case 'f':
-                std::cout << "F" << std::flush;
-                signalCharCode(device, "..-.", errcnt, errstr);
-                break;
-            case 'G':
-            case 'g':
-                std::cout << "G" << std::flush;
-                signalCharCode(device, "--.", errcnt, errstr);
-                break;
-            case 'H':
-            case 'h':
-                std::cout << "H" << std::flush;
-                signalCharCode(device, "....", errcnt, errstr);
-                break;
-            case 'I':
-            case 'i':
-                std::cout << "I" << std::flush;
-                signalCharCode(device, "..", errcnt, errstr);
-                break;
-            case 'J':
-            case 'j':
-                std::cout << "J" << std::flush;
-                signalCharCode(device, ".---", errcnt, errstr);
-                break;
-            case 'K':
-            case 'k':
-                std::cout << "K" << std::flush;
-                signalCharCode(device, "-.-", errcnt, errstr);
-                break;
-            case 'L':
-            case 'l':
-                std::cout << "L" << std::flush;
-                signalCharCode(device, ".-..", errcnt, errstr);
-                break;
-            case 'M':
-            case 'm':
-                std::cout << "M" << std::flush;
-                signalCharCode(device, "--", errcnt, errstr);
-                break;
-            case 'N':
-            case 'n':
-                std::cout << "N" << std::flush;
-                signalCharCode(device, "-.", errcnt, errstr);
-                break;
-            case 'O':
-            case 'o':
-                std::cout << "O" << std::flush;
-                signalCharCode(device, "---", errcnt, errstr);
-                break;
-            case 'P':
-            case 'p':
-                std::cout << "P" << std::flush;
-                signalCharCode(device, ".--.", errcnt, errstr);
-                break;
-            case 'Q':
-            case 'q':
-                std::cout << "Q" << std::flush;
-                signalCharCode(device, "--.-", errcnt, errstr);
-                break;
-            case 'R':
-            case 'r':
-                std::cout << "R" << std::flush;
-                signalCharCode(device, ".-.", errcnt, errstr);
-                break;
-            case 'S':
-            case 's':
-                std::cout << "S" << std::flush;
-                signalCharCode(device, "...", errcnt, errstr);
-                break;
-            case 'T':
-            case 't':
-                std::cout << "T" << std::flush;
-                signalCharCode(device, "-", errcnt, errstr);
-                break;
-            case 'U':
-            case 'u':
-                std::cout << "U" << std::flush;
-                signalCharCode(device, "..-", errcnt, errstr);
-                break;
-            case 'V':
-            case 'v':
-                std::cout << "V" << std::flush;
-                signalCharCode(device, "...-", errcnt, errstr);
-                break;
-            case 'W':
-            case 'w':
-                std::cout << "W" << std::flush;
-                signalCharCode(device, ".--", errcnt, errstr);
-                break;
-            case 'X':
-            case 'x':
-                std::cout << "X" << std::flush;
-                signalCharCode(device, "-..-", errcnt, errstr);
-                break;
-            case 'Y':
-            case 'y':
-                std::cout << "Y" << std::flush;
-                signalCharCode(device, "-.--", errcnt, errstr);
-                break;
-            case 'Z':
-            case 'z':
-                std::cout << "Z" << std::flush;
-                signalCharCode(device, "--..", errcnt, errstr);
-                break;
-            case '_':
-                std::cout << "_" << std::flush;
-                signalCharCode(device, "..--.-", errcnt, errstr);
-                break;
+        if ((message[i] == '\n' || message[i] == ' ') && i > 0 && message[i - 1] != '\n' && message[i - 1] != ' ') {  // Returns treated as spaces. Extra spaces and returns are to be omitted!
+            std::cout << " " << std::flush;
+            usleep(4 * TUNIT);  // Word space
+        } else {
+            char character = message[i];
+            if (character >= 'a' && character <= 'z') {  // If lowercase
+                character -= 32;  // Convert to uppercase
+            }
+            std::map<char, std::string> charCodes{
+                {'!', "-.-.--"},
+                {'"', ".-..-."},
+                {'$', "...-..-"},
+                {'&', ".-..."},
+                {'\'', ".----."},
+                {'(', "-.--."},
+                {')', "-.--.-"},
+                {'+', ".-.-."},
+                {',', "--..--"},
+                {'-', "-....-"},
+                {'.', ".-.-.-"},
+                {'/', "-..-."},
+                {'0', "-----"},
+                {'1', ".----"},
+                {'2', "..---"},
+                {'3', "...--"},
+                {'4', "....-"},
+                {'5', "....."},
+                {'6', "-...."},
+                {'7', "--..."},
+                {'8', "---.."},
+                {'9', "----."},
+                {':', "---..."},
+                {';', "-.-.-."},
+                {'=', "-...-"},
+                {'?', "..--.."},
+                {'@', ".--.-."},
+                {'A', ".-"},
+                {'B', "-..."},
+                {'C', "-.-."},
+                {'D', "-.."},
+                {'E', "."},
+                {'F', "..-."},
+                {'G', "--."},
+                {'H', "...."},
+                {'I', ".."},
+                {'J', ".---"},
+                {'K', "-.-"},
+                {'L', ".-.."},
+                {'M', "--"},
+                {'N', "-."},
+                {'O', "---"},
+                {'P', ".--."},
+                {'Q', "--.-"},
+                {'R', ".-."},
+                {'S', "..."},
+                {'T', "-"},
+                {'U', "..-"},
+                {'V', "...-"},
+                {'W', ".--"},
+                {'X', "-..-"},
+                {'Y', "-.--"},
+                {'Z', "--.."},
+                {'_', "..--.-"}
+            };
+            if (charCodes.count(character) > 0) {  // If character exists
+                std::cout << character << std::flush;  // Print character immediately!
+                signalCharCode(device, charCodes[character], errcnt, errstr);
+            }
         }
         if (errcnt != 0) {  // If one or more errors are detected
             break;  // Break the cycle
